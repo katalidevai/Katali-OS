@@ -2,75 +2,54 @@
 
 Katali-OS is an experimental standalone x86-64 operating system being developed toward native local-AI operation without requiring Windows or Linux underneath it.
 
-The long-term goal is a general-purpose bare-metal operating system where local AI becomes a native subsystem. The kernel remains responsible for hardware control, memory protection, security, and validated capabilities.
+The long-term goal is a general-purpose bare-metal OS where local AI can be a native subsystem. The kernel remains responsible for hardware control, memory protection, security, and validated capabilities. Models do not receive unrestricted ring-0 access.
 
-## Current verified project status
+## Current status
 
-The following foundations are working:
+The project has progressed from a bootable kernel to an early bare-metal model-inference demonstration. The status below separates hardware-verified foundations from experimental features and planned work.
 
-- Native x86-64 long-mode boot
-- Physical memory manager
-- Virtual memory manager
-- Kernel heap
-- GDT, TSS, IDT, and exception handling
-- ACPI hardware discovery
-- Multi-core/SMP support
-- PCI/PCIe enumeration on physical hardware
+### Working and verified
 
-SMP has been physically verified on:
+- Native x86-64 long-mode boot.
+- Physical and virtual memory managers, plus a kernel heap.
+- GDT, TSS, IDT, and exception handling.
+- ACPI hardware discovery and SMP startup.
+- SMP physically verified with all logical CPUs online on two systems:
+  - Intel Core i5-10400 desktop: 12/12 logical CPUs.
+  - Intel Core i5-10300H laptop: 8/8 logical CPUs.
+- PCI/PCIe enumeration on physical hardware, including discovery of NVMe, graphics, USB-controller, Ethernet, and other PCI devices. Compatibility is still being tested across machines.
+- Read-only NVMe access and NTFS path lookup on tested hardware.
+- Experimental native CPU inference with Qwen3 0.6B in GGUF Q8_0 format, including basic prompt/response interaction.
 
-| System | Logical CPUs online |
-| --- | --- |
-| Intel Core i5-10400 desktop | 12/12 |
-| Intel Core i5-10300H laptop | 8/8 |
+### Limited or not implemented
 
-Hardware discovery identifies NVMe devices, GPUs, USB controllers, Ethernet controllers, and other PCI devices. Device enumeration does not imply that drivers for those devices are implemented.
+- Storage access is read-only; Katali-OS does not write to the detected disks.
+- Model support is limited to the tested configuration. A general model installer, model manager, or broad compatibility with arbitrary model formats is not available.
+- Session chat/context handling is under development and has not yet been re-verified on physical hardware in its latest form.
+- Production-grade NVMe support, general filesystem support, and model loading across different hardware remain incomplete.
+- Networking, USB device support, and a higher-level desktop-like environment are not implemented.
 
-PCI behavior is currently being hardened across different physical machines, with ongoing hardware compatibility testing.
-
-The following capabilities are **not implemented yet**:
-
-- NVMe driver
-- Filesystem and model loading
-- Native LLM inference
-
-Katali-OS does not currently load or run AI models.
-
-## Roadmap
-
-The roadmap describes the intended development sequence. Planned phases are not claims of existing functionality.
-
-| Phase | Area | Status |
-| --- | --- | --- |
-| 1 | x86-64 foundation | Working |
-| 2 | Memory management | Working |
-| 3 | SMP/multicore | Physically verified |
-| 4 | PCI/PCIe | Working; hardware compatibility testing ongoing |
-| 5 | NVMe read-only storage | Planned |
-| 6 | Filesystem and model loading | Planned |
-| 7 | Native AI runtime | Planned |
-| 8 | BitNet/ternary CPU inference | Planned research |
-| 9 | Networking, USB, and broader driver support | Planned |
-| 10 | Higher-level Katali-OS environment | Planned |
+The inference result is an early technical demonstration, not a claim of production-quality model output, performance, or compatibility.
 
 ## AI direction
 
-Katali-OS is ultimately intended to run local models directly on bare metal.
+The current research direction is CPU-oriented inference using SIMD/AVX2 where available, multicore execution, and system RAM. BitNet and ternary-model inference are future research areas. Hardware capabilities should be discovered at runtime so the OS can adapt across machines instead of being built for one computer.
 
-The current preferred research direction is CPU-oriented inference, including BitNet/ternary models, SIMD/AVX2 optimization, multicore execution, and efficient use of system RAM. These are future research and implementation goals; native inference is not currently available.
+The AI layer will use controlled, validated kernel capabilities. The kernel remains the authority for hardware access, memory protection, and security.
 
-The AI layer is not intended to have unrestricted ring-0 hardware access. The kernel remains the authority and exposes controlled, validated capabilities to the AI subsystem. Hardware access and security decisions remain under kernel control.
+## Roadmap
 
-## Portability
+1. **x86-64 foundation** — working.
+2. **Memory management** — working.
+3. **SMP and multicore** — physically verified on two systems.
+4. **PCI/PCIe enumeration** — working; hardware compatibility testing continues.
+5. **NVMe storage** — read-only access demonstrated; robust driver support remains in progress.
+6. **Filesystem and model loading** — read-only NTFS path lookup and tested model loading demonstrated; broader support remains in progress.
+7. **Native AI runtime** — initial Qwen3 0.6B CPU inference demonstrated; experimental.
+8. **BitNet/ternary CPU inference** — planned research.
+9. **Networking, USB, and broader drivers** — planned.
+10. **Higher-level Katali-OS environment** — planned.
 
-Portability across x86-64 machines is an important design goal. Katali-OS should discover hardware and available capabilities rather than rely on assumptions hard-coded for one specific computer.
+## Disclaimer
 
-Testing across physical systems is part of this effort. Current hardware verification does not establish compatibility with every x86-64 machine.
-
-## Public repository scope
-
-This public repository is intentionally README-only for now. Source code, kernel code, binaries, boot images, build files, tools, scripts, model files, internal documentation, test artifacts, and private development files are not published here.
-
-## Experimental status
-
-Katali-OS is experimental research software. It is not currently intended as a replacement for a production desktop operating system.
+Katali-OS is experimental research software. It is not currently intended to replace a production desktop operating system.
