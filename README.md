@@ -19,17 +19,18 @@ The project has progressed from a bootable kernel to an early bare-metal model-i
   - Intel Core i5-10300H laptop: 8/8 logical CPUs.
 - PCI/PCIe enumeration on physical hardware, including discovery of NVMe, graphics, USB-controller, Ethernet, and other PCI devices. Compatibility is still being tested across machines.
 - Read-only NVMe access and NTFS path lookup on tested hardware.
-- Experimental native CPU inference with Qwen3 0.6B in GGUF Q8_0 format, including basic prompt/response interaction.
+- Native CPU inference demonstrated on physical hardware with Qwen3-4B Q4_K_M, loaded from NVMe through the read-only storage path and used for interactive prompts.
+- A Qwen chat session can retain recent turns until reboot and can be cleared by the user. The current interactive response limit is 128 generated tokens; this latest limit has passed the build and emulator boot checks and still needs a physical retest.
 
 ### Limited or not implemented
 
 - Storage access is read-only; Katali-OS does not write to the detected disks.
-- Model support is limited to the tested configuration. A general model installer, model manager, or broad compatibility with arbitrary model formats is not available.
-- Session chat/context handling is under development and has not yet been re-verified on physical hardware in its latest form.
+- Model support is limited to the tested Qwen3 GGUF configurations. A general model installer, model manager, or broad compatibility with arbitrary model formats is not available.
+- CPU inference is slow on current hardware, and response quality, length, and performance are still being evaluated. GPU inference is not implemented.
 - Production-grade NVMe support, general filesystem support, and model loading across different hardware remain incomplete.
 - Networking, USB device support, and a higher-level desktop-like environment are not implemented.
 
-The inference result is an early technical demonstration, not a claim of production-quality model output, performance, or compatibility.
+The Qwen3-4B result confirms that a multi-billion-parameter quantized model can be loaded and run directly on bare metal in the tested configuration. It is an early technical demonstration, not a claim of production-quality output, performance, or broad model compatibility.
 
 ## AI direction
 
@@ -45,7 +46,7 @@ The AI layer will use controlled, validated kernel capabilities. The kernel rema
 4. **PCI/PCIe enumeration** — working; hardware compatibility testing continues.
 5. **NVMe storage** — read-only access demonstrated; robust driver support remains in progress.
 6. **Filesystem and model loading** — read-only NTFS path lookup and tested model loading demonstrated; broader support remains in progress.
-7. **Native AI runtime** — initial Qwen3 0.6B CPU inference demonstrated; experimental.
+7. **Native AI runtime** — Qwen3-4B Q4_K_M CPU inference demonstrated on physical hardware; interactive chat is experimental and performance/output are being improved.
 8. **BitNet/ternary CPU inference** — planned research.
 9. **Networking, USB, and broader drivers** — planned.
 10. **Higher-level Katali-OS environment** — planned.
